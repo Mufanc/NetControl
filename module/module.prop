@@ -1,0 +1,6 @@
+id=netc
+name=NetControl
+version=v0.1.0
+versionCode=1
+author=Mufanc
+description=Control application network access with Android's OEM firewall

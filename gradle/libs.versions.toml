@@ -1,0 +1,23 @@
+[versions]
+agp = "9.0.1"
+aproc = "2.0.1"
+ksp = "2.3.6"
+ktor = "3.5.2"
+kotlin = "2.2.10"
+refine = "4.4.0"
+
+[libraries]
+ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
+ktor-server-cio = { module = "io.ktor:ktor-server-cio", version.ref = "ktor" }
+ktor-server-content-negotiation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktor" }
+refine-annotation = { module = "dev.rikka.tools.refine:annotation", version.ref = "refine" }
+refine-annotation-processor = { module = "dev.rikka.tools.refine:annotation-processor", version.ref = "refine" }
+refine-runtime = { module = "dev.rikka.tools.refine:runtime", version.ref = "refine" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+aproc = { id = "xyz.mufanc.aproc", version.ref = "aproc" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+refine = { id = "dev.rikka.tools.refine", version.ref = "refine" }

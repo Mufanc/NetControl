@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+
+<title>NetControl</title>
+
+<style>
+body{font:16px system-ui;background:#edf3f8;color:#24364b;max-width:32rem;margin:20vh auto;padding:24px}
+button{font:inherit;padding:12px 24px;background:#255bc9;color:white;border:0;border-radius:12px}
+button:focus-visible{outline:3px solid #568bdc;outline-offset:4px}
+p{line-height:1.7}
+</style>
+
+<h1>NetControl</h1>
+<p id="status" role="status">正在连接管理服务…</p>
+<button id="retry" hidden>重新连接</button>
+
+<script>
+const KSU = window.ksu;
+
+const status = document.querySelector('#status');
+const retry = document.querySelector('#retry');
+
+async function connect() {
+  retry.hidden = true;
+  status.textContent = '正在连接管理服务…';
+
+  try {
+    const moduleDir = JSON.parse(KSU.moduleInfo()).moduleDir;
+
+    const output = await new Promise((resolve, reject) => {
+      const timer = setTimeout(() => {
+        delete window.netcEndpointResult;
+        reject(new Error('timeout'));
+      }, 7000);
+
+      window.netcEndpointResult = (code, stdout) => {
+        clearTimeout(timer);
+        delete window.netcEndpointResult;
+
+        code === 0 ? resolve(stdout.trim()) : reject(new Error('daemon unavailable'));
+      };
+
+      try {
+        KSU.exec(
+          'busybox cat ./endpoint',
+          JSON.stringify({ cwd: moduleDir }),
+          'netcEndpointResult',
+        );
+      } catch (err) {
+        clearTimeout(timer);
+        delete window.netcEndpointResult;
+        reject(err);
+      }
+    });
+
+    const url = new URL(output);
+
+    if (
+      url.protocol !== 'http:' ||
+      url.hostname !== '127.0.0.1' ||
+      !url.port ||
+      url.username ||
+      url.password ||
+      !/^\/[0-9a-f]{32}\/$/.test(url.pathname) ||
+      url.hash ||
+      url.search
+    ) {
+      throw new Error('invalid endpoint');
+    }
+
+    location.replace(url.href);
+  } catch (_) {
+    status.textContent = '无法连接管理服务。请确认模块已启用且服务启动成功，然后重试。';
+    retry.hidden = false;
+  }
+}
+
+retry.onclick = connect;
+
+connect();
+</script>
+</html>

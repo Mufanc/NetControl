@@ -1,0 +1,8 @@
+/.gradle/
+/.kotlin/
+**/build/
+**/node_modules/
+module/webroot/assets/
+local.properties
+.idea/
+.DS_Store
